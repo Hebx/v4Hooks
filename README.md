@@ -1,66 +1,102 @@
-## Foundry
+# Uniswap v4 Hooks Examples
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+This repository contains example implementations of Uniswap v4 hooks demonstrating advanced DeFi functionality. It includes two main hooks: Take Profits Hook and Points Hook.
 
-Foundry consists of:
+## Overview
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+### Take Profits Hook
 
-## Documentation
+A smart contract that enables limit order-like functionality for taking profits at specified price points in Uniswap v4 pools.
 
-https://book.getfoundry.sh/
+### Points Hook
 
-## Usage
+A rewards system that distributes points to users who provide liquidity or trade in specific pools, with additional referral mechanics.
 
-### Build
+## Core Concepts
 
-```shell
-$ forge build
-```
+### Take Profits Hook
 
-### Test
+#### Key Features
 
-```shell
-$ forge test
-```
+- Place limit orders at specific price points (ticks)
+- Automatic order execution when price crosses specified ticks
+- ERC1155-based position management
+- Support for both trading directions (token0 → token1 and token1 → token0)
+- Multiple orders at different price points
+- Partial order execution and cancellation
 
-### Format
+#### Take Profits Implementation
 
-```shell
-$ forge fmt
-```
+1. Order Placement
 
-### Gas Snapshots
+   - Validates tick spacing
+   - Transfers input tokens
+   - Mints ERC1155 claim tokens
+   - Updates pending orders
 
-```shell
-$ forge snapshot
-```
+2. Order Execution
 
-### Anvil
+   - Monitors price changes via afterSwap
+   - Executes matching orders
+   - Updates claimable balances
+   - Handles token settlements
 
-```shell
-$ anvil
-```
+3. Position Management
+   - Unique position IDs per pool/tick/direction
+   - Claim token accounting
+   - Order cancellation logic
 
-### Deploy
+### Points Hook
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
+#### Key Features
 
-### Cast
+- Rewards for liquidity provision and trading
+- Referral system with bonus points
+- Native ETH pool integration
+- Automatic point distribution
+- ERC20-based points token
 
-```shell
-$ cast <subcommand>
-```
+#### Points Implementation
 
-### Help
+1. Reward Distribution
 
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+   - Tracks user referrals
+   - Calculates points based on activity
+   - Handles referral bonuses
+
+2. Activity Monitoring
+
+   - afterSwap hook for trade rewards
+   - afterAddLiquidity for LP rewards
+   - ETH amount tracking
+
+## Testing
+
+### Take Profits Tests
+
+- Order placement and cancellation
+- Single and multiple order execution
+- Direction-specific order execution
+- Edge cases and token accounting
+
+### Points Tests
+
+- Basic point distribution
+- Referral system
+- Liquidity provision rewards
+- Swap rewards
+
+## Security Considerations
+
+- Access control via onlyByPoolManager
+- Safe token transfer handling
+- Proper accounting and state management
+- Input validation
+- Reentrancy protection
+
+## Dependencies
+
+- Uniswap v4 Core & Periphery
+- OpenZeppelin Contracts
+- Solmate
+- Forge Standard Library
